@@ -59,7 +59,7 @@ export async function POST(req) {
             .order(
                 "tanggal_history",
                 {
-                    ascending: true,
+                    ascending: false,
                 }
             )
             .limit(10);
@@ -79,7 +79,7 @@ export async function POST(req) {
 
         const latestHistory =
             data.length > 0
-                ? data[data.length - 1]
+                ? data[0]
                 : null;
 
         return NextResponse.json({
