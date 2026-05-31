@@ -355,7 +355,7 @@ export default function Dashboard() {
                 {/* MAP */}
                 <div className="bg-white p-6 rounded-2xl shadow-md h-[18rem] w-[24rem]">
                     <h2 className="text-lg font-semibold text-gray-700">
-                        Monitoring Kecamatan Kota MakassarF
+                        Monitoring Kecamatan Kota Makassar
                     </h2>
                     <MapView
                         data={mapData}
