@@ -98,12 +98,8 @@ export default function Dashboard() {
                 if (mounted) {
 
                     setMapData(result.data || []);
-
-                    if (result.data?.length > 0) {
-
-                        setSelectedWilayah(
-                            result.data[0]
-                        );
+                    if (!selectedWilayah && result.data?.length > 0) {
+                        setSelectedWilayah(result.data[0]);
                     }
                 }
             } catch (error) {
@@ -123,7 +119,7 @@ export default function Dashboard() {
 
     useEffect(() => {
 
-        if (!selectedWilayah)
+        if (!selectedWilayah?.is_active)
             return;
 
         async function getChart() {
@@ -204,9 +200,29 @@ export default function Dashboard() {
             case "Waspada":
                 return "text-yellow-500";
 
+            case "Offline":
+                return "text-gray-500";
+
+            case "Data Tidak Ada":
+                return "text-blue-500";
+
             default:
                 return "text-green-500";
         }
+    }
+
+    function getSensorState() {
+
+        if (!selectedWilayah)
+            return "Tidak Ada";
+
+        if (!selectedWilayah.is_active)
+            return "Offline";
+
+        if (!sensorInfo)
+            return "Data Tidak Ada";
+
+        return sensorInfo.status;
     }
 
 
@@ -214,7 +230,7 @@ export default function Dashboard() {
         <div className="md:min-h-screen min-h-[72rem] bg-gray-100 p-6 min-w-auto">
             {/* HEADER */}
             <div className="flex justify-between items-center text-2xl font-bold mb-6 text-gray-800">
-                <div className="">Smart Drinase</div>
+                <div className="">CAREBA</div>
                 <div>
                     {
                         new Date().toLocaleDateString(
@@ -240,13 +256,17 @@ export default function Dashboard() {
                         <p className="text-gray-500 text-sm">Tinggi Air Saat Ini</p>
                         <h2 className="text-2xl font-bold">
 
-                            {sensorInfo
-                                ? `${sensorInfo.water_level} cm`
-                                : "--"}
+                            {
+                                !selectedWilayah?.is_active
+                                    ? "Offline"
+                                    : sensorInfo
+                                        ? `${sensorInfo.water_level} cm`
+                                        : "--"
+                            }
 
                         </h2>
-                        <span className={`font-semibold ${getStatusColor(sensorInfo?.status)}`}>
-                            {sensorInfo?.status || "Tidak Ada"}
+                        <span className={`font-semibold ${getStatusColor(getSensorState())}`}>
+                            {getSensorState() || "Tidak Ada"}
                         </span>
                     </div>
                 </div>
@@ -258,8 +278,8 @@ export default function Dashboard() {
                     </div>
                     <div>
                         <p className="text-gray-500 text-sm">Status Kanal</p>
-                        <h2 className={`font-semibold ${getStatusColor(sensorInfo?.status)}`}>
-                            {sensorInfo?.status || "Tidak Ada"}
+                        <h2 className={`font-semibold ${getStatusColor(getSensorState())}`}>
+                            {getSensorState() || "Tidak Ada"}
                         </h2>
                     </div>
                 </div>
@@ -287,13 +307,7 @@ export default function Dashboard() {
 
                         {selectedWilayah && (
                             <p className="text-sm text-gray-500">
-
-                                {selectedWilayah.total_laporan}
-                                {" "}
-                                laporan -
-                                {" "}
-                                {selectedWilayah.status}
-
+                                {getSensorState()}
                             </p>
                         )}
 
@@ -309,14 +323,25 @@ export default function Dashboard() {
                         Grafik Tinggi Air (24 Jam Terakhir)
                     </h2>
                     {
-                        sensorInfo ? (
+                        !selectedWilayah?.is_active ? (
+
+                            <div className="flex items-center justify-center h-[180px]">
+                                <p className="text-red-500 font-semibold">
+                                    Sensor Offline
+                                </p>
+                            </div>
+
+                        ) : sensorInfo ? (
+
                             <Chart
                                 options={chartOptions}
                                 series={chartSeries}
                                 type="line"
                                 height={180}
                             />
+
                         ) : (
+
                             <div className="flex items-center justify-center h-[180px]">
                                 <p className="text-gray-400 text-sm">
                                     Belum ada data sensor

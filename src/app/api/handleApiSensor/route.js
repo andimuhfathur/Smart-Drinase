@@ -98,8 +98,7 @@ export async function POST(req) {
                 {
                     nama_Sensor : nama_sensor,
                     kecamatan_id,
-                    water_level: 0,
-                    status: "Aman",
+                    is_active: true,
                 },
             ]);
 

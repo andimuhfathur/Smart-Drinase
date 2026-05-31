@@ -162,7 +162,7 @@ export default function SensorPage() {
 
             setEditId(null);
 
-            fetchSensor();
+           
 
         } catch (error) {
 
@@ -213,7 +213,7 @@ export default function SensorPage() {
 
             alert(data.message);
 
-            fetchSensor();
+            
 
         } catch (error) {
 
@@ -236,6 +236,48 @@ export default function SensorPage() {
             kecamatan_id:
                 item.kecamatan_id,
         });
+    }
+
+    async function handleToggleSensor(
+        id_sensor,
+        currentStatus
+    ) {
+
+        try {
+
+            const res = await fetch(
+                "/api/handleToggleSensor",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json",
+                    },
+
+                    body: JSON.stringify({
+                        id_sensor,
+                        is_active:
+                            !currentStatus,
+                    }),
+                }
+            );
+
+            const data =
+                await res.json();
+
+            if (!res.ok) {
+
+                alert(data.error);
+
+                return;
+            }
+            alert("Toggle Berhasil")
+
+        } catch (error) {
+
+            console.log(error);
+        }
     }
 
     return (
@@ -376,7 +418,7 @@ export default function SensorPage() {
                                     {item.status}
                                 </td>
 
-                                <td className="p-3 flex gap-2">
+                                <td className="p-2 flex gap-1">
 
                                     <button
                                         onClick={() =>
@@ -398,7 +440,28 @@ export default function SensorPage() {
                                         Hapus
                                     </button>
 
+                                    <button
+                                        onClick={() =>
+                                            handleToggleSensor(
+                                                item.id_sensor,
+                                                item.is_active
+                                            )
+                                        }
+                                        className={`px-4 py-2 rounded-lg text-white ${item.is_active
+                                            ? "bg-gray-500"
+                                            : "bg-green-600"
+                                            }`}
+                                    >
+                                        {item.is_active
+                                            ? "Matikan"
+                                            : "Nyalakan"}
+                                    </button>
+
                                 </td>
+
+                        
+
+                                
 
                             </tr>
 

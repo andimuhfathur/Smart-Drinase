@@ -148,7 +148,7 @@ export default function Sidebar() {
             {/* TITLE */}
             <div className="mb-8">
                 <h1 className="text-2xl font-bold">
-                    Smart Drainase RT
+                    CAREBA
                 </h1>
             </div>
 

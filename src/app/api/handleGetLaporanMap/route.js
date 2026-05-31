@@ -5,96 +5,63 @@ export async function GET() {
 
     try {
 
-        // =========================
-        // AMBIL LAPORAN + KECAMATAN
-        // =========================
-
-        const {
-            data,
-            error,
-        } = await supabaseAdmin
-            .from("laporan")
-            .select(`
-                id_laporan,
-                kecamatan (
-                    id_kecamatan,
-                    nama_Wilayah,
-                    latitude,
-                    longitude
-                )
-            `);
+        const { data: sensors, error } =
+            await supabaseAdmin
+                .from("sensor")
+                .select(`
+                    id_sensor,
+                    nama_Sensor,
+                    is_active,
+                    kecamatan (
+                        id_kecamatan,
+                        nama_Wilayah,
+                        latitude,
+                        longitude
+                    )
+                `);
 
         if (error) {
-
-            return NextResponse.json(
-                {
-                    error: error.message,
-                },
-                {
-                    status: 400,
-                }
-            );
+            throw error;
         }
 
-        // =========================
-        // KELOMPOKKAN DATA
-        // =========================
+        const result = [];
 
-        const grouped = {};
+        for (const sensor of sensors) {
 
-        data.forEach((item) => {
+            const wilayah = sensor.kecamatan;
 
-            const wilayah = item.kecamatan;
+            const { data: latestHistory } =
+                await supabaseAdmin
+                    .from("sensor_history")
+                    .select("*")
+                    .eq("sensor_id", sensor.id_sensor)
+                    .order("tanggal_history", {
+                        ascending: false,
+                    })
+                    .limit(1)
+                    .maybeSingle();
 
-            if (!wilayah) return;
+            result.push({
+                id_sensor: sensor.id_sensor,
+                nama_sensor: sensor.nama_Sensor,
+                is_active: sensor.is_active,
 
-            const id = wilayah.id_kecamatan;
+                id_kecamatan:
+                    wilayah.id_kecamatan,
 
-            if (!grouped[id]) {
+                nama_Wilayah:
+                    wilayah.nama_Wilayah,
 
-                grouped[id] = {
-                    id_kecamatan: id,
-                    nama_Wilayah:
-                        wilayah.nama_Wilayah,
+                latitude:
+                    wilayah.latitude,
 
-                    latitude:
-                        wilayah.latitude,
+                longitude:
+                    wilayah.longitude,
 
-                    longitude:
-                        wilayah.longitude,
-
-                    total_laporan: 0,
-                };
-            }
-
-            grouped[id].total_laporan += 1;
-        });
-
-        // =========================
-        // STATUS
-        // =========================
-
-        const result =
-            Object.values(grouped).map((item) => {
-
-                let status = "Aman";
-
-                if (item.total_laporan >= 3) {
-
-                    status = "Bahaya";
-
-                } else if (
-                    item.total_laporan >= 2
-                ) {
-
-                    status = "Waspada";
-                }
-
-                return {
-                    ...item,
-                    status,
-                };
+                latestHistory:
+                    latestHistory || null,
             });
+        }
 
         return NextResponse.json({
             data: result,
