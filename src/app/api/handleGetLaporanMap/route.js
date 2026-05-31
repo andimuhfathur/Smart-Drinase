@@ -41,10 +41,28 @@ export async function GET() {
                     .limit(1)
                     .maybeSingle();
 
+            let status = "Data Tidak Ada";
+
+            if (!sensor.is_active) {
+
+                status = "Offline";
+
+            } else if (latestHistory) {
+
+                status =
+                    latestHistory.status;
+            }
+
             result.push({
-                id_sensor: sensor.id_sensor,
-                nama_sensor: sensor.nama_Sensor,
-                is_active: sensor.is_active,
+
+                id_sensor:
+                    sensor.id_sensor,
+
+                nama_sensor:
+                    sensor.nama_Sensor,
+
+                is_active:
+                    sensor.is_active,
 
                 id_kecamatan:
                     wilayah.id_kecamatan,
@@ -57,6 +75,8 @@ export async function GET() {
 
                 longitude:
                     wilayah.longitude,
+
+                status,
 
                 latestHistory:
                     latestHistory || null,

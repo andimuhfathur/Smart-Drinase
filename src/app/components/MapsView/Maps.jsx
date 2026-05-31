@@ -22,6 +22,12 @@ function getColor(status) {
         case "Bahaya":
             return "red";
 
+        case "Offline":
+            return "gray";
+
+        case "Data Tidak Ada":
+            return "blue";
+
         default:
             return "gray";
     }
@@ -80,14 +86,7 @@ export default function MapView({
 
                             <p>
                                 Status:
-                                {" "}
                                 {item.status}
-                            </p>
-
-                            <p>
-                                Total Laporan:
-                                {" "}
-                                {item.total_laporan}
                             </p>
 
                         </div>
