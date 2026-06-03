@@ -28,22 +28,42 @@ export default function HistoryPage() {
         useState([]);
     const [loading, setLoading] =
         useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const [startDate, setStartDate] =
+        useState("");
+
+    const [endDate, setEndDate] =
+        useState("");
+
+
+    const itemsPerPage = 20;
    
 
-    const filteredData =
-        historyData.filter((item) => {
+    const filteredData = historyData.filter((item) => {
 
-            const wilayah =
-                item.sensor?.kecamatan
-                    ?.nama_Wilayah || "-";
+        const wilayah =
+            item.sensor?.kecamatan?.nama_Wilayah || "-";
 
-            return wilayah
+        const date =
+            new Date(item.tanggal_history);
+
+        const matchWilayah =
+            wilayah
                 .toLowerCase()
-                .includes(
-                    search.toLowerCase()
-                );
-        });
-    
+                .includes(search.toLowerCase());
+
+        const matchDate =
+            (!startDate ||
+                date >= new Date(startDate)) &&
+            (!endDate ||
+                date <= new Date(
+                    endDate + "T23:59:59"
+                ));
+
+        return matchWilayah && matchDate;
+    });
+
     useEffect(() => {
 
         async function getHistory() {
@@ -75,6 +95,23 @@ export default function HistoryPage() {
 
     }, []);
 
+    const totalPages = Math.max(
+        1,
+        Math.ceil(
+            filteredData.length / itemsPerPage
+        )
+    );
+
+    const startIndex =
+        (currentPage - 1) * itemsPerPage;
+
+    const currentData =
+        filteredData.slice(
+            startIndex,
+            startIndex + itemsPerPage
+        );
+    
+  
     if (loading) {
 
         return (
@@ -92,19 +129,46 @@ export default function HistoryPage() {
             </h1>
 
             {/* SEARCH */}
-            <div className="mb-4">
-                <input
+            {/* <div className="mb-4">
+               
+            </div> */}
+
+            <div className="flex flex-wrap gap-3 mb-4">
+                 <input
                     type="text"
                     placeholder="Cari Wilayah..."
                     className="w-full md:w-1/3 px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-400"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                />
+
+                <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => {
+                        setStartDate(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="border rounded-lg px-3 py-2"
+                />
+
+                <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => {
+                        setEndDate(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="border rounded-lg px-3 py-2"
                 />
             </div>
 
             {/* TABLE */}
             <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-                <div className="max-h-[320px] overflow-y-auto">
+                <div className="md:max-h-[280px] max-h-[320px] overflow-y-auto">
                 <table className="w-full text-left">
                         <thead className="bg-gray-50 text-gray-600 text-sm sticky top-0 z-10">
                         <tr>
@@ -129,7 +193,7 @@ export default function HistoryPage() {
                                 )
                             }
 
-                        {filteredData.map((item) => {
+                            {currentData.map((item) => {
                             const status = item.status;
                             return (
                                 <tr
@@ -139,18 +203,15 @@ export default function HistoryPage() {
                                     <td className="p-4">
 
                                         {
-                                            new Date(
-                                                item.tanggal_history
-                                            ).toLocaleString(
-                                                "id-ID",
-                                                {
+                                            new Date(item.tanggal_history)
+                                                .toLocaleString("id-ID", {
+                                                    timeZone: "Asia/Jakarta",
                                                     day: "numeric",
                                                     month: "long",
                                                     year: "numeric",
                                                     hour: "2-digit",
                                                     minute: "2-digit",
-                                                }
-                                            )
+                                                })
                                         }
 
                                     </td>
@@ -180,13 +241,75 @@ export default function HistoryPage() {
                 </div>
             </div>
 
+            <div className="flex flex-col md:flex-row items-center justify-between mt-6 gap-4">
+
+                <div className="text-sm text-gray-500">
+                    Menampilkan{" "}
+                    <span className="font-semibold">
+                        {currentData.length}
+                    </span>{" "}
+                    dari{" "}
+                    <span className="font-semibold">
+                        {filteredData.length}
+                    </span>{" "}
+                    data
+                </div>
+
+                <div className="flex items-center gap-2">
+
+                    <button
+                        disabled={currentPage === 1}
+                        onClick={() =>
+                            setCurrentPage((p) => p - 1)
+                        }
+                        className={`
+                px-4 py-2 rounded-xl
+                transition-all duration-300
+                ${currentPage === 1
+                                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                : "bg-white shadow hover:shadow-lg hover:-translate-y-0.5"
+                            }
+            `}
+                    >
+                        ← Prev
+                    </button>
+
+                    <div className="px-4 py-2 rounded-xl bg-blue-600 text-white font-semibold shadow">
+                        {currentPage} / {totalPages}
+                    </div>
+
+                    <button
+                        disabled={currentPage === totalPages}
+                        onClick={() =>
+                            setCurrentPage((p) => p + 1)
+                        }
+                        className={`
+                px-4 py-2 rounded-xl
+                transition-all duration-300
+                ${currentPage === totalPages
+                                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                : "bg-white shadow hover:shadow-lg hover:-translate-y-0.5"
+                            }
+            `}
+                    >
+                        Next →
+                    </button>
+
+                </div>
+            </div>
+
             {/* EXPORT BUTTON */}
             <div className="mt-6">
                 <button
                     onClick={() =>
-                        exportPDF(filteredData)
+                        exportPDF(
+                            filteredData,
+                            search,
+                            startDate,
+                            endDate
+                        )
                     }
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow-md transition"
+                    className="bg-blue-600 hover:bg-blue-700 hover:scale-105 active:scale-95 text-white px-6 py-3 rounded-xl shadow-md transition-all duration-300"
                 >
                     Cetak PDF
                 </button>
@@ -195,7 +318,14 @@ export default function HistoryPage() {
     );
 }
 
-function exportPDF(data) {
+
+
+function exportPDF(
+    data,
+    search,
+    startDate,
+    endDate
+) {
 
     if (data.length === 0) {
         alert("Tidak ada data untuk dicetak");
@@ -223,6 +353,20 @@ function exportPDF(data) {
     );
 
     doc.text(
+        `Wilayah: ${search || "Semua Wilayah"}`,
+        14,
+        40
+    );
+
+    doc.text(
+        `Periode: ${startDate || "-"
+        } s/d ${endDate || "-"
+        }`,
+        14,
+        46
+    );
+
+    doc.text(
         `Total Data: ${data.length}`,
         14,
         34
@@ -231,7 +375,7 @@ function exportPDF(data) {
     // TABLE
     autoTable(doc, {
 
-        startY: 40,
+        startY: 55,
 
         head: [[
             "Waktu",
@@ -242,18 +386,15 @@ function exportPDF(data) {
 
         body: data.map((item) => [
 
-            new Date(
-                item.tanggal_history
-            ).toLocaleString(
-                "id-ID",
-                {
+            new Date(item.tanggal_history)
+                .toLocaleString("id-ID", {
+                    timeZone: "Asia/Jakarta",
                     day: "numeric",
-                    month: "short",
+                    month: "long",
                     year: "numeric",
                     hour: "2-digit",
                     minute: "2-digit",
-                }
-            ),
+                }),
 
             item.sensor?.kecamatan
                 ?.nama_Wilayah || "-",

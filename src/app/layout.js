@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Smart Drainase RT",
+  title: "CAREBA",
   description: "Sistem di Kanal BTP",
 };
 
