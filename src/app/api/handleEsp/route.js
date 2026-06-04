@@ -62,12 +62,12 @@ export async function POST(req) {
 
         let status = "Aman";
 
-        if (water >= 10) {
+        if (water <= 6) {
 
             status = "Bahaya";
 
         } else if (
-            water >= 6
+            water >= 7 && water <= 10
         ) {
 
             status = "Waspada";

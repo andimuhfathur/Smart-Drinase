@@ -529,7 +529,7 @@ export default function LaporanPage() {
                                             {item.status}
                                         </span>
 
-                                        {item.status === "Tunda" &&
+                                        {item.status === "Tolak" &&
                                             item.alasan_tunda && (
                                                 <p className="text-xs text-gray-500 mt-1">
                                                     Alasan:
@@ -583,7 +583,7 @@ export default function LaporanPage() {
 
                                         <input
                                             type="text"
-                                            placeholder="Alasan tunda..."
+                                            placeholder="Alasan Tolak..."
                                             value={
                                                 alasanInput[
                                                 item.id_laporan
@@ -603,13 +603,13 @@ export default function LaporanPage() {
                                             onClick={() =>
                                                 updateStatus(
                                                     item.id_laporan,
-                                                    "Tunda",
+                                                    "Tolak",
                                                     item.nama_pelapor
                                                 )
                                             }
                                             className="bg-yellow-500 text-white py-3 rounded-xl w-full"
                                         >
-                                            Tunda
+                                            Tolak
                                         </button>
                                     </div>
                                 )}

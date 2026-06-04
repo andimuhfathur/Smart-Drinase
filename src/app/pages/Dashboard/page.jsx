@@ -230,18 +230,9 @@ export default function Dashboard() {
         <div className="md:min-h-screen min-h-[72rem] bg-gray-100 p-6 min-w-auto">
             {/* HEADER */}
             <div className="flex justify-between items-center text-2xl font-bold mb-6 text-gray-800">
-                <div className="">CAREBA</div>
+                <div className="">{selectedWilayah?.nama_sensor || "Belum dipilih"}</div>
                 <div>
-                    {
-                        new Date().toLocaleDateString(
-                            "id-ID",
-                            {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                            }
-                        )
-                    }
+                    
                 </div>
             </div>
 
@@ -320,7 +311,16 @@ export default function Dashboard() {
             <div className="flex md:flex-row flex-col items-center h-auto gap-5">
                 <div className="bg-white p-6 rounded-2xl shadow-md md:w-[40rem] w-[24rem] h-[18rem]">
                     <h2 className="text-lg font-semibold mb-4 text-gray-700">
-                        Grafik Tinggi Air (24 Jam Terakhir)
+                        Grafik Tinggi Air (24 Jam Terakhir) {
+                            new Date().toLocaleDateString(
+                                "id-ID",
+                                {
+                                    day: "numeric",
+                                    month: "long",
+                                    year: "numeric",
+                                }
+                            )
+                        }
                     </h2>
                     {
                         !selectedWilayah?.is_active ? (

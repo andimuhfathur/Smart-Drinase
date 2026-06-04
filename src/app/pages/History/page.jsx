@@ -173,7 +173,7 @@ export default function HistoryPage() {
                         <thead className="bg-gray-50 text-gray-600 text-sm sticky top-0 z-10">
                         <tr>
                             <th className="p-4">Waktu</th>
-                            <th className="p-4">Tinggi Air (cm)</th>
+                            <th className="p-4">Jarak Batas Aman (cm)</th>
                                 <th className="p-4">Status</th>
                                 <th className="p-4">Wilayah</th>
                         </tr>
