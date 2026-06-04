@@ -244,7 +244,7 @@ export default function Dashboard() {
                         <FaWater />
                     </div>
                     <div>
-                        <p className="text-gray-500 text-sm">Tinggi Air Saat Ini</p>
+                        <p className="text-gray-500 text-sm">Jarak Batas Aman</p>
                         <h2 className="text-2xl font-bold">
 
                             {
