@@ -76,8 +76,8 @@ Dashboard     Notification
 ### Backend
 
 * Next.js API Route
-* Prisma ORM
-* MySQL
+* Supabase
+* Postgresql
 
 ### IoT
 
@@ -246,18 +246,6 @@ cd smart-drainase-monitoring
 npm install
 ```
 
-### Konfigurasi Environment
-
-Buat file `.env`
-
-```env
-DATABASE_URL=
-NEXTAUTH_SECRET=
-NEXTAUTH_URL=
-TELEGRAM_BOT_TOKEN=
-TELEGRAM_CHAT_ID=
-```
-
 ### Generate Prisma Client
 
 ```bash
@@ -286,14 +274,27 @@ http://localhost:3000
 
 ## 👨‍💻 Tim Pengembang
 
-### A. Muh. Fathur Ramadhan
+### Argazora
+
+* IoT Developer
+* Manajer Proyek
+  
+### Fathur
 
 * Fullstack Developer
-* IoT Developer
 * UI/UX Designer
 
-SMKN 2 Makassar
-Rekayasa Perangkat Lunak
+### Rislam
+
+* Devops Engineering
+  
+### Geo
+
+* Mechatronics Engineer
+
+### Nelma
+
+* Team Support
 
 ---
 
