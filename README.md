@@ -1,43 +1,56 @@
 # 🌊 Smart Drainase Monitoring System
 
-Smart Drainase Monitoring System adalah sistem monitoring drainase berbasis Internet of Things (IoT) yang dirancang untuk membantu pemantauan kondisi saluran drainase secara real-time.
+> Sistem Monitoring Drainase Berbasis Internet of Things (IoT) untuk Deteksi Dini Potensi Banjir dan Pelaporan Masyarakat.
 
-Sistem ini mengintegrasikan ESP32, sensor ultrasonik, Bot Telegram, dan Website Monitoring untuk memberikan informasi kondisi drainase serta notifikasi dini ketika terjadi potensi banjir.
+## 📖 Deskripsi
+
+Smart Drainase Monitoring System merupakan platform berbasis Internet of Things (IoT) yang dirancang untuk membantu masyarakat dan petugas dalam memantau kondisi drainase secara real-time.
+
+Sistem ini mengintegrasikan perangkat sensor berbasis ESP32, website monitoring, dan Bot Telegram untuk memberikan informasi kondisi drainase secara cepat, akurat, dan mudah diakses.
+
+Selain monitoring otomatis menggunakan sensor, sistem juga menyediakan fitur pelaporan masyarakat sehingga warga dapat berpartisipasi aktif dalam melaporkan permasalahan drainase seperti penyumbatan, sampah, genangan air, maupun kerusakan infrastruktur.
 
 ---
 
 ## 📌 Latar Belakang
 
-Pemantauan drainase di banyak daerah masih dilakukan secara manual sehingga sering terjadi keterlambatan dalam mengetahui kondisi saluran yang berpotensi menyebabkan banjir.
+Banjir perkotaan sering terjadi akibat buruknya kondisi drainase yang tidak terpantau dengan baik. Proses monitoring dan pelaporan yang masih dilakukan secara manual menyebabkan informasi sering terlambat diterima oleh pihak terkait.
 
-Melalui proyek ini, kondisi drainase dapat dipantau secara real-time melalui website dan sistem dapat mengirimkan peringatan otomatis kepada petugas atau masyarakat.
+Melalui Smart Drainase Monitoring System, proses pemantauan dapat dilakukan secara real-time dan laporan masyarakat dapat dikelola secara terpusat sehingga penanganan masalah drainase menjadi lebih cepat dan efektif.
 
 ---
 
 ## 🎯 Tujuan Proyek
 
-- Memantau kondisi drainase secara real-time.
-- Memberikan peringatan dini terhadap potensi banjir.
-- Memudahkan petugas dalam memonitor drainase tanpa harus datang ke lokasi.
-- Menyediakan data historis untuk analisis kondisi drainase.
+* Memantau kondisi drainase secara real-time.
+* Memberikan notifikasi dini terhadap potensi banjir.
+* Mempermudah petugas dalam memonitor kondisi drainase.
+* Menyediakan media pelaporan bagi masyarakat.
+* Menyimpan data historis untuk analisis dan evaluasi.
 
 ---
 
 ## 🏗️ Arsitektur Sistem
 
 ```text
-Sensor Ultrasonik
-        │
-        ▼
-      ESP32
-        │
-        ▼
-     API Server
-        │
- ┌──────┴──────┐
- ▼             ▼
-Website     Telegram Bot
-Dashboard   Notification
+┌─────────────────┐
+│ Sensor Ultrasonik │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│      ESP32      │
+└────────┬────────┘
+         │ HTTP API
+         ▼
+┌─────────────────┐
+│    Web Server   │
+└────────┬────────┘
+         │
+ ┌───────┴────────┐
+ ▼                ▼
+Website      Telegram Bot
+Dashboard     Notification
 ```
 
 ---
@@ -46,97 +59,148 @@ Dashboard   Notification
 
 ### Hardware
 
-- ESP32
-- Sensor Ultrasonik HC-SR04
-- Breadboard
-- Kabel Jumper
-- Power Supply
+* ESP32
+* Sensor Ultrasonik HC-SR04
+* Breadboard
+* Kabel Jumper
+* Power Supply
 
-### Software
+### Frontend
 
-#### Frontend
+* Next.js
+* React.js
+* Tailwind CSS
+* Leaflet Maps
+* Chart.js
 
-- Next.js
-- React.js
-- Tailwind CSS
-- Leaflet Maps
+### Backend
 
-#### Backend
+* Next.js API Route
+* Prisma ORM
+* MySQL
 
-- Next.js API Route
-- Prisma ORM
-- MySQL
+### IoT
 
-#### IoT
+* ESP32
+* HTTP Request
+* REST API
 
-- ESP32
-- HTTP API
+### Notification
 
-#### Notification
-
-- Telegram Bot API
+* Telegram Bot API
 
 ---
 
 ## ✨ Fitur Utama
 
-### Monitoring Real-time
+### 📊 Monitoring Drainase Real-Time
 
-- Menampilkan kondisi drainase secara langsung.
-- Menampilkan status:
-  - Aman
-  - Waspada
-  - Bahaya
+* Monitoring ketinggian air secara langsung.
+* Pembaruan data otomatis.
+* Informasi status drainase terkini.
 
-### Dashboard Monitoring
+### 🚨 Sistem Status Drainase
 
-- Informasi drainase terkini.
-- Grafik perubahan ketinggian air.
-- Riwayat monitoring.
+| Status     | Keterangan                     |
+| ---------- | ------------------------------ |
+| 🟢 Aman    | Kondisi normal                 |
+| 🟡 Waspada | Ketinggian air mulai meningkat |
+| 🔴 Bahaya  | Potensi banjir                 |
 
-### Peta Lokasi
+### 🗺️ Peta Monitoring
 
-- Menampilkan titik drainase pada peta.
-- Indikator warna berdasarkan kondisi drainase.
+* Menampilkan lokasi titik drainase.
+* Penanda warna sesuai kondisi drainase.
+* Memudahkan identifikasi titik rawan.
 
-### Telegram Notification
+### 🤖 Notifikasi Telegram
 
-- Notifikasi otomatis ketika status berubah.
-- Informasi kondisi dan waktu kejadian.
+* Peringatan otomatis saat kondisi berubah.
+* Informasi lokasi dan waktu kejadian.
+* Monitoring tanpa harus membuka website.
 
-### Sistem Pelaporan Masyarakat
+### 📝 Sistem Pelaporan Masyarakat
 
-- Membuat laporan kondisi drainase.
-- Upload foto bukti.
-- Tracking status laporan.
-- Riwayat laporan pengguna.
+* Membuat laporan kondisi drainase.
+* Upload foto bukti.
+* Melihat status laporan.
+* Riwayat laporan pengguna.
 
-### Manajemen Laporan
+### 🛠️ Manajemen Laporan
 
-- Verifikasi laporan.
-- Persetujuan atau penolakan laporan.
-- Fitur revisi laporan yang ditolak.
+* Verifikasi laporan oleh admin.
+* Persetujuan atau penolakan laporan.
+* Fitur revisi laporan yang ditolak.
+* Monitoring progres penanganan laporan.
+
+### 📈 Riwayat dan Statistik
+
+* Penyimpanan data historis.
+* Grafik perubahan ketinggian air.
+* Analisis kondisi drainase.
 
 ---
 
 ## 🔄 Alur Kerja Sistem
 
-1. Sensor ultrasonik membaca tinggi permukaan air.
+### Monitoring Sensor
+
+1. Sensor ultrasonik membaca ketinggian air.
 2. ESP32 mengolah data sensor.
 3. Data dikirim ke server melalui API.
-4. Server menyimpan data ke database.
-5. Website memperbarui informasi monitoring.
-6. Jika status Waspada atau Bahaya:
-   - Telegram Bot mengirim notifikasi otomatis.
-7. Petugas dapat melihat kondisi melalui dashboard.
+4. Data disimpan ke database.
+5. Dashboard diperbarui secara real-time.
+6. Telegram mengirim notifikasi apabila status berubah menjadi Waspada atau Bahaya.
+
+### Pelaporan Masyarakat
+
+1. Pengguna membuat laporan.
+2. Sistem menyimpan laporan dan foto bukti.
+3. Admin melakukan verifikasi.
+4. Laporan dapat diterima atau ditolak.
+5. Jika ditolak, pengguna dapat melakukan revisi.
+6. Status laporan dapat dipantau melalui website.
+
+---
+
+## 🗄️ Struktur Database
+
+### User
+
+* id
+* name
+* email
+* password
+* role
+
+### Report
+
+* id
+* title
+* description
+* image
+* status
+* createdAt
+
+### Drainage
+
+* id
+* location
+* waterLevel
+* status
+
+### MonitoringHistory
+
+* id
+* drainageId
+* waterLevel
+* timestamp
 
 ---
 
 ## 📷 Tampilan Sistem
 
-### Dashboard
-
-Tambahkan screenshot dashboard di sini.
+### Dashboard Monitoring
 
 ```md
 ![Dashboard](./public/dashboard.png)
@@ -144,58 +208,25 @@ Tambahkan screenshot dashboard di sini.
 
 ### Monitoring Peta
 
-Tambahkan screenshot peta di sini.
-
 ```md
 ![Map](./public/map.png)
 ```
 
 ### Telegram Notification
 
-Tambahkan screenshot Telegram di sini.
-
 ```md
 ![Telegram](./public/telegram.png)
 ```
 
----
+### Sistem Pelaporan
 
-## 🗄️ Database
-
-Beberapa entitas utama:
-
-### User
-
-- id
-- name
-- email
-- role
-
-### Report
-
-- id
-- title
-- description
-- image
-- status
-
-### Drainage
-
-- id
-- location
-- waterLevel
-- status
-
-### Monitoring History
-
-- id
-- drainageId
-- waterLevel
-- timestamp
+```md
+![Report](./public/report.png)
+```
 
 ---
 
-## 🚀 Cara Menjalankan Project
+## 🚀 Instalasi dan Menjalankan Proyek
 
 ### Clone Repository
 
@@ -215,7 +246,7 @@ cd smart-drainase-monitoring
 npm install
 ```
 
-### Setup Environment
+### Konfigurasi Environment
 
 Buat file `.env`
 
@@ -227,7 +258,7 @@ TELEGRAM_BOT_TOKEN=
 TELEGRAM_CHAT_ID=
 ```
 
-### Generate Prisma
+### Generate Prisma Client
 
 ```bash
 npx prisma generate
@@ -239,34 +270,39 @@ npx prisma generate
 npx prisma migrate dev
 ```
 
-### Jalankan Project
+### Jalankan Aplikasi
 
 ```bash
 npm run dev
 ```
 
----
+Website akan berjalan pada:
 
-## 📊 Status Drainase
-
-| Status | Keterangan |
-|----------|----------|
-| 🟢 Aman | Kondisi normal |
-| 🟡 Waspada | Ketinggian air meningkat |
-| 🔴 Bahaya | Potensi banjir |
+```bash
+http://localhost:3000
+```
 
 ---
 
 ## 👨‍💻 Tim Pengembang
 
-**A. Muh. Fathur Ramadhan**
+### A. Muh. Fathur Ramadhan
 
-Rekayasa Perangkat Lunak
+* Fullstack Developer
+* IoT Developer
+* UI/UX Designer
 
 SMKN 2 Makassar
+Rekayasa Perangkat Lunak
 
 ---
 
 ## 📄 Lisensi
 
-Project ini dibuat untuk keperluan penelitian, pembelajaran, dan pengembangan sistem monitoring drainase berbasis IoT.
+Proyek ini dibuat untuk tujuan pembelajaran, penelitian, dan pengembangan sistem monitoring drainase berbasis Internet of Things (IoT).
+
+---
+
+## 🌟 Kontribusi
+
+Kontribusi, masukan, dan saran sangat terbuka untuk pengembangan sistem yang lebih baik di masa mendatang.
