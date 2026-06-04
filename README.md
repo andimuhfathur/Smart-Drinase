@@ -1,36 +1,272 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🌊 Smart Drainase Monitoring System
 
-## Getting Started
+Smart Drainase Monitoring System adalah sistem monitoring drainase berbasis Internet of Things (IoT) yang dirancang untuk membantu pemantauan kondisi saluran drainase secara real-time.
 
-First, run the development server:
+Sistem ini mengintegrasikan ESP32, sensor ultrasonik, Bot Telegram, dan Website Monitoring untuk memberikan informasi kondisi drainase serta notifikasi dini ketika terjadi potensi banjir.
+
+---
+
+## 📌 Latar Belakang
+
+Pemantauan drainase di banyak daerah masih dilakukan secara manual sehingga sering terjadi keterlambatan dalam mengetahui kondisi saluran yang berpotensi menyebabkan banjir.
+
+Melalui proyek ini, kondisi drainase dapat dipantau secara real-time melalui website dan sistem dapat mengirimkan peringatan otomatis kepada petugas atau masyarakat.
+
+---
+
+## 🎯 Tujuan Proyek
+
+- Memantau kondisi drainase secara real-time.
+- Memberikan peringatan dini terhadap potensi banjir.
+- Memudahkan petugas dalam memonitor drainase tanpa harus datang ke lokasi.
+- Menyediakan data historis untuk analisis kondisi drainase.
+
+---
+
+## 🏗️ Arsitektur Sistem
+
+```text
+Sensor Ultrasonik
+        │
+        ▼
+      ESP32
+        │
+        ▼
+     API Server
+        │
+ ┌──────┴──────┐
+ ▼             ▼
+Website     Telegram Bot
+Dashboard   Notification
+```
+
+---
+
+## ⚙️ Teknologi yang Digunakan
+
+### Hardware
+
+- ESP32
+- Sensor Ultrasonik HC-SR04
+- Breadboard
+- Kabel Jumper
+- Power Supply
+
+### Software
+
+#### Frontend
+
+- Next.js
+- React.js
+- Tailwind CSS
+- Leaflet Maps
+
+#### Backend
+
+- Next.js API Route
+- Prisma ORM
+- MySQL
+
+#### IoT
+
+- ESP32
+- HTTP API
+
+#### Notification
+
+- Telegram Bot API
+
+---
+
+## ✨ Fitur Utama
+
+### Monitoring Real-time
+
+- Menampilkan kondisi drainase secara langsung.
+- Menampilkan status:
+  - Aman
+  - Waspada
+  - Bahaya
+
+### Dashboard Monitoring
+
+- Informasi drainase terkini.
+- Grafik perubahan ketinggian air.
+- Riwayat monitoring.
+
+### Peta Lokasi
+
+- Menampilkan titik drainase pada peta.
+- Indikator warna berdasarkan kondisi drainase.
+
+### Telegram Notification
+
+- Notifikasi otomatis ketika status berubah.
+- Informasi kondisi dan waktu kejadian.
+
+### Sistem Pelaporan Masyarakat
+
+- Membuat laporan kondisi drainase.
+- Upload foto bukti.
+- Tracking status laporan.
+- Riwayat laporan pengguna.
+
+### Manajemen Laporan
+
+- Verifikasi laporan.
+- Persetujuan atau penolakan laporan.
+- Fitur revisi laporan yang ditolak.
+
+---
+
+## 🔄 Alur Kerja Sistem
+
+1. Sensor ultrasonik membaca tinggi permukaan air.
+2. ESP32 mengolah data sensor.
+3. Data dikirim ke server melalui API.
+4. Server menyimpan data ke database.
+5. Website memperbarui informasi monitoring.
+6. Jika status Waspada atau Bahaya:
+   - Telegram Bot mengirim notifikasi otomatis.
+7. Petugas dapat melihat kondisi melalui dashboard.
+
+---
+
+## 📷 Tampilan Sistem
+
+### Dashboard
+
+Tambahkan screenshot dashboard di sini.
+
+```md
+![Dashboard](./public/dashboard.png)
+```
+
+### Monitoring Peta
+
+Tambahkan screenshot peta di sini.
+
+```md
+![Map](./public/map.png)
+```
+
+### Telegram Notification
+
+Tambahkan screenshot Telegram di sini.
+
+```md
+![Telegram](./public/telegram.png)
+```
+
+---
+
+## 🗄️ Database
+
+Beberapa entitas utama:
+
+### User
+
+- id
+- name
+- email
+- role
+
+### Report
+
+- id
+- title
+- description
+- image
+- status
+
+### Drainage
+
+- id
+- location
+- waterLevel
+- status
+
+### Monitoring History
+
+- id
+- drainageId
+- waterLevel
+- timestamp
+
+---
+
+## 🚀 Cara Menjalankan Project
+
+### Clone Repository
+
+```bash
+git clone https://github.com/username/smart-drainase-monitoring.git
+```
+
+### Masuk ke Folder
+
+```bash
+cd smart-drainase-monitoring
+```
+
+### Install Dependency
+
+```bash
+npm install
+```
+
+### Setup Environment
+
+Buat file `.env`
+
+```env
+DATABASE_URL=
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+```
+
+### Generate Prisma
+
+```bash
+npx prisma generate
+```
+
+### Migrasi Database
+
+```bash
+npx prisma migrate dev
+```
+
+### Jalankan Project
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 📊 Status Drainase
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Status | Keterangan |
+|----------|----------|
+| 🟢 Aman | Kondisi normal |
+| 🟡 Waspada | Ketinggian air meningkat |
+| 🔴 Bahaya | Potensi banjir |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 👨‍💻 Tim Pengembang
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**A. Muh. Fathur Ramadhan**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Rekayasa Perangkat Lunak
 
-## Deploy on Vercel
+SMKN 2 Makassar
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 Lisensi
+
+Project ini dibuat untuk keperluan penelitian, pembelajaran, dan pengembangan sistem monitoring drainase berbasis IoT.
