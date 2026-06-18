@@ -119,22 +119,43 @@ export async function PUT(req) {
             );
         }
 
-        const {
-            error
-        } = await supabaseAdmin
-            .from("laporan")
-            .update({
-                status,
-                alasan_tunda:
-                    status === "Tunda"
-                        ? alasan
-                        : null,
-            })
-            .eq(
-                "id_laporan",
-                laporan_id
-            );
+        let error = null;
 
+        if (status === "Disetujui") {
+
+            const result =
+                await supabaseAdmin
+                    .from("laporan")
+                    .delete()
+                    .eq(
+                        "id_laporan",
+                        laporan_id
+                    );
+
+            error = result.error;
+
+        } else {
+
+            const result =
+                await supabaseAdmin
+                    .from("laporan")
+                    .update({
+
+                        status,
+
+                        alasan_tunda:
+                            status === "Tunda"
+                                ? alasan
+                                : null,
+
+                    })
+                    .eq(
+                        "id_laporan",
+                        laporan_id
+                    );
+
+            error = result.error;
+        }
         if (error) {
 
             return NextResponse.json(
@@ -162,8 +183,11 @@ ${laporan.nama_pelapor}
 📍 Wilayah:
 ${laporan.kecamatan?.nama_Wilayah}
 
-📌 Status:
-${status}
+${status === "Disetujui"
+                    ? "✅ LAPORAN DISETUJUI"
+                    : status === "Diproses"
+                        ? "🔵 LAPORAN DIKONFIRMASI"
+                        : "⏸ LAPORAN DITUNDA"}
 
 📝 Deskripsi:
 ${laporan.description}
@@ -179,7 +203,9 @@ ${status === "Tunda"
 
         return NextResponse.json({
             message:
-                "Status berhasil diupdate",
+                status === "Disetujui"
+                    ? "Laporan berhasil diselesaikan"
+                    : "Status berhasil diupdate",
         });
 
 

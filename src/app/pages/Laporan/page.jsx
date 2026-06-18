@@ -536,22 +536,34 @@ export default function LaporanPage() {
                                         </td>
 
                                                 {/* AKSI PETUGAS */}
-                                                {user.role === "petugas" && (
+                                        {(
+                                            user.role === "petugas" ||
+                                            user.role === "admin"
+                                        ) && (
 
                                                     <td className="p-4 space-y-2 min-w-[200px]">
 
-                                                        <button
-                                                            onClick={() =>
-                                                                updateStatus(
-                                                                    item.id_laporan,
-                                                                    "Disetujui",
-                                                                    item.nama_pelapor
-                                                                )
-                                                            }
-                                                            className="bg-green-500 text-white px-3 py-2 rounded-lg w-full"
-                                                        >
-                                                            Setujui
-                                                        </button>
+                                                <button
+                                                    onClick={() => {
+
+                                                        const confirmDelete =
+                                                            confirm(
+                                                                "Laporan akan dikirim ke telegram dan dihapus dari daftar. Lanjutkan?"
+                                                            );
+
+                                                        if (confirmDelete) {
+
+                                                            updateStatus(
+                                                                item.id_laporan,
+                                                                "Disetujui",
+                                                                item.nama_pelapor
+                                                            );
+                                                        }
+                                                    }}
+                                                    className="bg-green-500 text-white px-3 py-2 rounded-lg w-full"
+                                                >
+                                                    Setujui
+                                                </button>
 
                                                         <button
                                                             onClick={() =>
@@ -715,7 +727,10 @@ export default function LaporanPage() {
                                         </div>
 
                                         {/* PETUGAS */}
-                                        {user.role === "petugas" && (
+                                    {(
+                                        user.role === "petugas" ||
+                                        user.role === "admin"
+                                    ) && (
 
                                             <div className="mt-4 space-y-2">
 
