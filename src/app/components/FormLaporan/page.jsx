@@ -26,12 +26,17 @@ export default function FormLaporanPage() {
 
     const [loading, setLoading] = useState(false);
 
+    const [kkPreview, setKkPreview] = useState(null);
+
     const [formData, setFormData] = useState({
         nama_pelapor: "",
         kecamatan_id: "",
         kategori: "Banjir",
         description: "",
         foto: null,
+        foto_kk: null,
+        rt: "",
+        rw: "",
     });
 
     
@@ -67,17 +72,55 @@ export default function FormLaporanPage() {
         }
     }
 
+    function handleKK(e) {
+
+        const file =
+            e.target.files[0];
+
+        if (file) {
+
+            setKkPreview(
+                URL.createObjectURL(file)
+            );
+
+            setFormData({
+                ...formData,
+                foto_kk: file,
+            });
+        }
+    }
+
     // =========================
     // SUBMIT
     // =========================
+
+
+    
     async function handleSubmit(e) {
 
         e.preventDefault();
 
         try {
 
+            if (
+                !formData.nama_pelapor ||
+                !formData.kecamatan_id ||
+                !formData.description ||
+                !formData.foto ||
+                !formData.foto_kk ||
+                !formData.rt ||
+                !formData.rw
+            ) {
+
+                alert("Laporan belum lengkap");
+
+                return;
+            }
+
+
             setLoading(true);
 
+           
             const body = new FormData();
 
             body.append(
@@ -100,17 +143,25 @@ export default function FormLaporanPage() {
                 formData.description
             );
 
-            if (formData.foto) {
-                body.append(
-                    "foto",
-                    formData.foto
-                );
-
-                body.append(
-                    "user_id",
-                    user.id
-                );
+            if (!user) {
+                alert("Silahkan login terlebih dahulu");
+                return;
             }
+
+            body.append("user_id", user.id);
+
+            body.append("rt", formData.rt);
+
+            body.append("rw", formData.rw);
+
+            if (formData.foto) {
+                body.append("foto", formData.foto);
+            }
+
+            if (formData.foto_kk) {
+                body.append("foto_kk", formData.foto_kk);
+            }
+            
 
             const res = await fetch(
                 "/api/handleLaporan",
@@ -131,14 +182,17 @@ export default function FormLaporanPage() {
 
             setFormData({
                 nama_pelapor: "",
-                wilayah: "",
+                kecamatan_id: "",
                 kategori: "Banjir",
                 description: "",
                 foto: null,
+                foto_kk: null,
+                rt: "",
+                rw: "",
             });
 
             setPreview(null);
-
+            setKkPreview(null);
         } catch (error) {
 
             console.log(error);
@@ -255,6 +309,40 @@ export default function FormLaporanPage() {
                         </select>
                     </div>
 
+                    <div>
+
+                        <label className="text-sm font-semibold text-gray-700 mb-2">
+                            RT
+                        </label>
+
+                        <input
+                            type="text"
+                            name="rt"
+                            value={formData.rt}
+                            onChange={handleChange}
+                            className="w-full border border-gray-200 rounded-2xl px-4 py-3 outline-none"
+                        />
+
+                    </div>
+
+                    <div>
+
+                        <label className="text-sm font-semibold text-gray-700 mb-2">
+                            RW
+                        </label>
+
+                        <input
+                            type="text"
+                            name="rw"
+                            value={formData.rw}
+                            onChange={handleChange}
+                            className="w-full border border-gray-200 rounded-2xl px-4 py-3 outline-none"
+                        />
+
+                    </div>
+
+
+
                     {/* KATEGORI */}
                     <div>
 
@@ -292,6 +380,37 @@ export default function FormLaporanPage() {
                             placeholder="Jelaskan kondisi..."
                             className="w-full border border-gray-200 rounded-2xl px-4 py-3 outline-none"
                         />
+                    </div>
+
+                    <div>
+
+                        <label className="text-sm font-semibold text-gray-700 mb-2">
+                            Upload Foto KK
+                        </label>
+
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleKK}
+                            className="w-full border border-dashed border-gray-300 rounded-2xl p-3"
+                        />
+
+                        {kkPreview && (
+
+                            <div className="mt-4">
+
+                                <Image
+                                    src={kkPreview}
+                                    alt="Preview KK"
+                                    width={300}
+                                    height={300}
+                                    className="rounded-2xl"
+                                />
+
+                            </div>
+
+                        )}
+
                     </div>
 
                     {/* FOTO */}

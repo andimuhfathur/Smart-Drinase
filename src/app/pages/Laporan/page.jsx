@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { jsPDF } from "jspdf";
 
 import {
     useEffect,
@@ -8,7 +10,10 @@ import {
 } from "react";
 
 
+
 export default function LaporanPage() {
+
+    const router = useRouter();
 
     const [data, setData] = useState([]);
 
@@ -167,6 +172,129 @@ export default function LaporanPage() {
         }
     }
 
+    async function generatePDF(idLaporan) {
+
+        try {
+
+            const res =
+                await fetch(
+                    "/api/generateSurat",
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+                        },
+
+                        body: JSON.stringify({
+                            laporan_id:
+                                idLaporan,
+                        }),
+                    }
+                );
+
+            const laporan =
+                await res.json();
+
+            if (!res.ok) {
+
+                alert(
+                    laporan.error
+                );
+
+                return;
+            }
+
+            const doc =
+                new jsPDF();
+
+            doc.setFontSize(16);
+
+            doc.text(
+                "DINAS DRAINASE KOTA MAKASSAR",
+                20,
+                20
+            );
+
+            doc.setFontSize(14);
+
+            doc.text(
+                "SURAT LAPORAN WARGA",
+                20,
+                30
+            );
+
+            doc.setFontSize(12);
+
+            doc.text(
+                `Nama Pelapor : ${laporan.nama_pelapor}`,
+                20,
+                50
+            );
+
+            doc.text(
+                `RT : ${laporan.rt}`,
+                20,
+                60
+            );
+
+            doc.text(
+                `RW : ${laporan.rw}`,
+                20,
+                70
+            );
+
+            doc.text(
+                `Wilayah : ${laporan.kecamatan?.nama_Wilayah}`,
+                20,
+                80
+            );
+
+            doc.text(
+                `Kategori : ${laporan.kategori}`,
+                20,
+                90
+            );
+
+            doc.text(
+                `Status : ${laporan.status}`,
+                20,
+                100
+            );
+
+            doc.text(
+                "Deskripsi Laporan:",
+                20,
+                120
+            );
+
+            const splitText =
+                doc.splitTextToSize(
+                    laporan.description,
+                    170
+                );
+
+            doc.text(
+                splitText,
+                20,
+                130
+            );
+
+            doc.save(
+                `Laporan-${laporan.nama_pelapor}.pdf`
+            );
+
+        } catch (error) {
+
+            console.log(error);
+
+            alert(
+                "Gagal membuat PDF"
+            );
+        }
+    }
+
     // =====================================
     // DEADLINE
     // =====================================
@@ -197,6 +325,7 @@ export default function LaporanPage() {
         );
     }
 
+    
     if (loading) {
 
         return (
@@ -259,8 +388,13 @@ export default function LaporanPage() {
                                     Deadline
                                 </th>
 
+
                                 <th className="p-4 text-left">
                                     Status
+                                </th>
+
+                                <th className="p-4">
+                                    Surat
                                 </th>
 
                                 {/* PETUGAS */}
@@ -282,165 +416,193 @@ export default function LaporanPage() {
                                     );
 
                                 return (
-                                    <tr
-                                        key={
-                                            item.id_laporan
-                                        }
+                                            <tr
                                         className="border-t align-top"
-                                    >
+                                        key={item.id_laporan} 
+                                        
+                                            >
 
-                                        {/* LAPORAN */}
-                                        <td className="p-4">
+                                                {/* LAPORAN */}
+                                                <td className="p-4">
 
-                                            <div className="font-semibold">
-                                                {
-                                                    item.kategori
-                                                }
-                                            </div>
-
-                                            <div className="text-gray-500 text-xs mt-1">
-                                                {
-                                                    item.description
-                                                }
-                                            </div>
-                                        </td>
-
-                                        {/* IMAGE */}
-                                        <td className="p-4">
-
-                                            {item.image_laporan && (
-                                                <img
-                                                    src={item.image_laporan}
-                                                    alt="laporan"
-                                                    className="w-16 h-16 object-cover rounded-lg"
-
-                                                />
-                                            )}
-                                        </td>
-
-                                        {/* LOKASI */}
-                                        <td className="p-4">
-
-                                            {
-                                                item.kecamatan
-                                                    ?.nama_Wilayah
-                                            }
-                                        </td>
-
-                                        {/* TANGGAL */}
-                                        <td className="p-4">
-
-                                            {
-                                                new Date(item.tanggal_laporan)
-                                                    .toLocaleString("id-ID", {
-                                                        timeZone: "Asia/Jakarta",
-                                                        day: "numeric",
-                                                        month: "long",
-                                                        year: "numeric",
-                                                        hour: "2-digit",
-                                                        minute: "2-digit",
-                                                    })
-                                            }
-                                        </td>
-
-                                        {/* DEADLINE */}
-                                        <td className="p-4">
-
-                                            {deadline}
-                                        </td>
-
-                                        {/* STATUS */}
-                                        <td className="p-4 font-semibold">
-
-                                            {item.status}
-
-                                            {/* ALASAN */}
-                                            {item.status === "Tunda" &&
-                                                item.alasan_tunda && (
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        Alasan:
-                                                        {" "}
+                                                    <div className="font-semibold">
                                                         {
-                                                            item.alasan_tunda
+                                                            item.kategori
                                                         }
-                                                    </p>
+                                                    </div>
+
+                                                    <div className="text-gray-500 text-xs mt-1">
+                                                        {
+                                                            item.description
+                                                        }
+                                                    </div>
+                                                </td>
+
+                                                {/* IMAGE */}
+                                                <td className="p-4">
+
+                                                    {item.image_laporan && (
+                                                        <img
+                                                            src={item.image_laporan}
+                                                            alt="laporan"
+                                                            className="w-16 h-16 object-cover rounded-lg"
+
+                                                        />
+                                                    )}
+                                                </td>
+
+                                                {/* LOKASI */}
+                                                <td className="p-4">
+
+                                                    {
+                                                        item.kecamatan
+                                                            ?.nama_Wilayah
+                                                    }
+                                                </td>
+
+                                                {/* TANGGAL */}
+                                                <td className="p-4">
+
+                                                    {
+                                                        new Date(item.tanggal_laporan)
+                                                            .toLocaleString("id-ID", {
+                                                                timeZone: "Asia/Jakarta",
+                                                                day: "numeric",
+                                                                month: "long",
+                                                                year: "numeric",
+                                                                hour: "2-digit",
+                                                                minute: "2-digit",
+                                                            })
+                                                    }
+                                                </td>
+
+                                                {/* DEADLINE */}
+                                                <td className="p-4">
+
+                                                    {deadline}
+                                                </td>
+
+                                                {/* STATUS */}
+                                                <td className="p-4 font-semibold">
+
+                                                    {item.status}
+
+                                                    {/* ALASAN */}
+                                                    {item.status === "Tunda" &&
+                                                        item.alasan_tunda && (
+                                                            <p className="text-xs text-gray-500 mt-1">
+                                                                Alasan:
+                                                                {" "}
+                                                                {
+                                                                    item.alasan_tunda
+                                                                }
+                                                            </p>
+                                                        )}
+
+                                                    {/* OVERDUE */}
+                                                    {isOverdue(deadline) &&
+                                                        item.status !== "Selesai" && (
+                                                            <p className="text-red-600 text-xs mt-1">
+                                                                ⚠
+                                                                Melewati deadline
+                                                            </p>
+                                                        )}
+                                                </td>
+
+                                        <td className="p-4">
+
+                                            {(user.role === "petugas" ||
+                                                user.role === "admin") && (
+
+                                                    <button
+                                                        onClick={() =>
+                                                            generatePDF(
+                                                                item.id_laporan
+                                                            )
+                                                        }
+                                                        className="
+                bg-purple-600
+                text-white
+                px-3
+                py-2
+                rounded-lg
+            "
+                                                    >
+                                                        Unduh Surat
+                                                    </button>
+
                                                 )}
 
-                                            {/* OVERDUE */}
-                                            {isOverdue(deadline) &&
-                                                item.status !== "Selesai" && (
-                                                    <p className="text-red-600 text-xs mt-1">
-                                                        ⚠
-                                                        Melewati deadline
-                                                    </p>
-                                                )}
                                         </td>
 
-                                        {/* AKSI PETUGAS */}
-                                        {user.role === "petugas" && (
+                                                {/* AKSI PETUGAS */}
+                                                {user.role === "petugas" && (
 
-                                            <td className="p-4 space-y-2 min-w-[200px]">
+                                                    <td className="p-4 space-y-2 min-w-[200px]">
 
-                                                <button
-                                                    onClick={() =>
-                                                        updateStatus(
-                                                            item.id_laporan,
-                                                            "Disetujui",
-                                                            item.nama_pelapor
-                                                        )
-                                                    }
-                                                    className="bg-green-500 text-white px-3 py-2 rounded-lg w-full"
-                                                >
-                                                    Setujui
-                                                </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                updateStatus(
+                                                                    item.id_laporan,
+                                                                    "Disetujui",
+                                                                    item.nama_pelapor
+                                                                )
+                                                            }
+                                                            className="bg-green-500 text-white px-3 py-2 rounded-lg w-full"
+                                                        >
+                                                            Setujui
+                                                        </button>
 
-                                                <button
-                                                    onClick={() =>
-                                                        updateStatus(
-                                                            item.id_laporan,
-                                                            "Diproses",
-                                                            item.nama_pelapor
-                                                        )
-                                                    }
-                                                    className="bg-blue-500 text-white px-3 py-2 rounded-lg w-full"
-                                                >
-                                                    Konfirmasi
-                                                </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                updateStatus(
+                                                                    item.id_laporan,
+                                                                    "Diproses",
+                                                                    item.nama_pelapor
+                                                                )
+                                                            }
+                                                            className="bg-blue-500 text-white px-3 py-2 rounded-lg w-full"
+                                                        >
+                                                            Konfirmasi
+                                                        </button>
 
-                                                {/* ALASAN */}
-                                                <input
-                                                    type="text"
-                                                    placeholder="Alasan tunda..."
-                                                    value={
-                                                        alasanInput[
-                                                        item.id_laporan
-                                                        ] || ""
-                                                    }
-                                                    onChange={(e) =>
-                                                        setAlasanInput({
-                                                            ...alasanInput,
-                                                            [item.id_laporan]:
-                                                                e.target.value,
-                                                        })
-                                                    }
-                                                    className="w-full border px-2 py-2 rounded-lg text-xs"
-                                                />
+                                                        {/* ALASAN */}
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Alasan tunda..."
+                                                            value={
+                                                                alasanInput[
+                                                                item.id_laporan
+                                                                ] || ""
+                                                            }
+                                                            onChange={(e) =>
+                                                                setAlasanInput({
+                                                                    ...alasanInput,
+                                                                    [item.id_laporan]:
+                                                                        e.target.value,
+                                                                })
+                                                            }
+                                                            className="w-full border px-2 py-2 rounded-lg text-xs"
+                                                        />
 
-                                                <button
-                                                    onClick={() =>
-                                                        updateStatus(
-                                                            item.id_laporan,
-                                                            "Tunda",
-                                                            item.nama_pelapor
-                                                        )
-                                                    }
-                                                    className="bg-yellow-500 text-white px-3 py-2 rounded-lg w-full"
-                                                >
-                                                    Tunda
-                                                </button>
-                                            </td>
-                                        )}
+                                                        <button
+                                                            onClick={() =>
+                                                                updateStatus(
+                                                                    item.id_laporan,
+                                                                    "Tunda",
+                                                                    item.nama_pelapor
+                                                                )
+                                                            }
+                                                            className="bg-yellow-500 text-white px-3 py-2 rounded-lg w-full"
+                                                        >
+                                                            Tunda
+                                                        </button>
+                                                    </td>
+                                                )}
                                     </tr>
+                                    
+                                        
+                                  
                                 );
                             })}
                         </tbody>
@@ -463,156 +625,160 @@ export default function LaporanPage() {
                             );
 
                         return (
-                            <div
-                                key={item.id_laporan}
-                                className="bg-white rounded-2xl shadow-md p-4"
-                            >
+                            <div className="" key={item.id_laporan}>
+                                
+                                    <div
+                                        
+                                        className="bg-white rounded-2xl shadow-md p-4"
+                                    >
 
-                                {/* IMAGE */}
-                                {item.image_laporan && (
-                                    <img
-                                        src={item.image_laporan}
-                                        alt="laporan"
+                                        {/* IMAGE */}
+                                        {item.image_laporan && (
+                                            <img
+                                                src={item.image_laporan}
+                                                alt="laporan"
 
-                                        className="w-full h-48 object-cover rounded-xl"
-                                    />
-                                )}
+                                                className="w-full h-48 object-cover rounded-xl"
+                                            />
+                                        )}
 
-                                <div className="mt-4 space-y-2">
+                                        <div className="mt-4 space-y-2">
 
-                                    <h2 className="font-bold text-lg">
-                                        {item.kategori}
-                                    </h2>
+                                            <h2 className="font-bold text-lg">
+                                                {item.kategori}
+                                            </h2>
 
-                                    <p className="text-sm text-gray-600">
-                                        {
-                                            item.description
-                                        }
-                                    </p>
+                                            <p className="text-sm text-gray-600">
+                                                {
+                                                    item.description
+                                                }
+                                            </p>
 
-                                    <p className="text-sm text-gray-500">
-                                        📍
-                                        {" "}
-                                        {
-                                            item.kecamatan
-                                                ?.nama_Wilayah
-                                        }
-                                    </p>
+                                            <p className="text-sm text-gray-500">
+                                                📍
+                                                {" "}
+                                                {
+                                                    item.kecamatan
+                                                        ?.nama_Wilayah
+                                                }
+                                            </p>
 
-                                    <p className="text-sm">
-                                        📅
-                                        {" "}
-                                        {
-                                            new Date(item.tanggal_laporan)
-                                                .toLocaleString("id-ID", {
-                                                    timeZone: "Asia/Jakarta",
-                                                    day: "numeric",
-                                                    month: "long",
-                                                    year: "numeric",
-                                                    hour: "2-digit",
-                                                    minute: "2-digit",
-                                                })
-                                        }
-                                    </p>
+                                            <p className="text-sm">
+                                                📅
+                                                {" "}
+                                                {
+                                                    new Date(item.tanggal_laporan)
+                                                        .toLocaleString("id-ID", {
+                                                            timeZone: "Asia/Jakarta",
+                                                            day: "numeric",
+                                                            month: "long",
+                                                            year: "numeric",
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                        })
+                                                }
+                                            </p>
 
-                                    <p className="text-sm">
-                                        ⏳
-                                        {" "}
-                                        Deadline:
-                                        {" "}
-                                        {deadline}
-                                    </p>
+                                            <p className="text-sm">
+                                                ⏳
+                                                {" "}
+                                                Deadline:
+                                                {" "}
+                                                {deadline}
+                                            </p>
 
-                                    <div className="pt-2">
+                                            <div className="pt-2">
 
-                                        <span className="font-semibold">
-                                            {item.status}
-                                        </span>
+                                                <span className="font-semibold">
+                                                    {item.status}
+                                                </span>
 
-                                        {item.status === "Tolak" &&
-                                            item.alasan_tunda && (
-                                                <p className="text-xs text-gray-500 mt-1">
-                                                    Alasan:
-                                                    {" "}
-                                                    {
-                                                        item.alasan_tunda
+                                                {item.status === "Tolak" &&
+                                                    item.alasan_tunda && (
+                                                        <p className="text-xs text-gray-500 mt-1">
+                                                            Alasan:
+                                                            {" "}
+                                                            {
+                                                                item.alasan_tunda
+                                                            }
+                                                        </p>
+                                                    )}
+
+                                                {isOverdue(deadline) &&
+                                                    item.status !== "Selesai" && (
+                                                        <p className="text-red-500 text-xs mt-1">
+                                                            ⚠
+                                                            Melewati deadline
+                                                        </p>
+                                                    )}
+                                            </div>
+                                        </div>
+
+                                        {/* PETUGAS */}
+                                        {user.role === "petugas" && (
+
+                                            <div className="mt-4 space-y-2">
+
+                                                <button
+                                                    onClick={() =>
+                                                        updateStatus(
+                                                            item.id_laporan,
+                                                            "Disetujui",
+                                                            item.nama_pelapor
+                                                        )
                                                     }
-                                                </p>
-                                            )}
+                                                    className="bg-green-500 text-white py-3 rounded-xl w-full"
+                                                >
+                                                    Setujui
+                                                </button>
 
-                                        {isOverdue(deadline) &&
-                                            item.status !== "Selesai" && (
-                                                <p className="text-red-500 text-xs mt-1">
-                                                    ⚠
-                                                    Melewati deadline
-                                                </p>
-                                            )}
+                                                <button
+                                                    onClick={() =>
+                                                        updateStatus(
+                                                            item.id_laporan,
+                                                            "Diproses",
+                                                            item.nama_pelapor
+                                                        )
+                                                    }
+                                                    className="bg-blue-500 text-white py-3 rounded-xl w-full"
+                                                >
+                                                    Konfirmasi
+                                                </button>
+
+                                                <input
+                                                    type="text"
+                                                    placeholder="Alasan Tolak..."
+                                                    value={
+                                                        alasanInput[
+                                                        item.id_laporan
+                                                        ] || ""
+                                                    }
+                                                    onChange={(e) =>
+                                                        setAlasanInput({
+                                                            ...alasanInput,
+                                                            [item.id_laporan]:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    className="w-full border px-3 py-3 rounded-xl text-sm"
+                                                />
+
+                                                <button
+                                                    onClick={() =>
+                                                        updateStatus(
+                                                            item.id_laporan,
+                                                            "Tolak",
+                                                            item.nama_pelapor
+                                                        )
+                                                    }
+                                                    className="bg-yellow-500 text-white py-3 rounded-xl w-full"
+                                                >
+                                                    Tolak
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                </div>
-
-                                {/* PETUGAS */}
-                                {user.role === "petugas" && (
-
-                                    <div className="mt-4 space-y-2">
-
-                                        <button
-                                            onClick={() =>
-                                                updateStatus(
-                                                    item.id_laporan,
-                                                    "Disetujui",
-                                                    item.nama_pelapor
-                                                )
-                                            }
-                                            className="bg-green-500 text-white py-3 rounded-xl w-full"
-                                        >
-                                            Setujui
-                                        </button>
-
-                                        <button
-                                            onClick={() =>
-                                                updateStatus(
-                                                    item.id_laporan,
-                                                    "Diproses",
-                                                    item.nama_pelapor
-                                                )
-                                            }
-                                            className="bg-blue-500 text-white py-3 rounded-xl w-full"
-                                        >
-                                            Konfirmasi
-                                        </button>
-
-                                        <input
-                                            type="text"
-                                            placeholder="Alasan Tolak..."
-                                            value={
-                                                alasanInput[
-                                                item.id_laporan
-                                                ] || ""
-                                            }
-                                            onChange={(e) =>
-                                                setAlasanInput({
-                                                    ...alasanInput,
-                                                    [item.id_laporan]:
-                                                        e.target.value,
-                                                })
-                                            }
-                                            className="w-full border px-3 py-3 rounded-xl text-sm"
-                                        />
-
-                                        <button
-                                            onClick={() =>
-                                                updateStatus(
-                                                    item.id_laporan,
-                                                    "Tolak",
-                                                    item.nama_pelapor
-                                                )
-                                            }
-                                            className="bg-yellow-500 text-white py-3 rounded-xl w-full"
-                                        >
-                                            Tolak
-                                        </button>
-                                    </div>
-                                )}
+                                
                             </div>
                         );
                     })}

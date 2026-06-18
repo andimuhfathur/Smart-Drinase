@@ -1,54 +1,75 @@
-import { NextResponse } from "next/server";
-import { supabaseAdmin } from "../../lib/supabase/supabaseAdmin";
+    import { NextResponse } from "next/server";
+    import { supabaseAdmin } from "../../lib/supabase/supabaseAdmin";
 
-export async function POST(req) {
+    export async function POST(req) {
 
-    try {
+        try {
 
-        const body = await req.json();
+            const body = await req.json();
 
-        const { user_id, role } = body;
+            const { user_id, role } = body;
 
-        let query = supabaseAdmin
-            .from("laporan")
-            .select(`
-                *,
-                kecamatan (
-                    nama_Wilayah,
-                    latitude,
-                    longitude
-                )
-            `)
-            .order(
-                "tanggal_laporan",
-                {
-                    ascending: false,
-                }
-        );
-        
-        
-
-        // =========================
-        // USER HANYA LIHAT PUNYA DIA
-        // =========================
-
-        if (role === "user") {
-
-            query = query.eq(
-                "user_id",
-                user_id
+            let query = supabaseAdmin
+                .from("laporan")
+                .select(`
+                    *,
+                    kecamatan (
+                        nama_Wilayah,
+                        latitude,
+                        longitude
+                    )
+                `)
+                .order(
+                    "tanggal_laporan",
+                    {
+                        ascending: false,
+                    }
             );
-        }
+            
+            
 
-        // admin & petugas
-        // lihat semua
+            // =========================
+            // USER HANYA LIHAT PUNYA DIA
+            // =========================
 
-        const {
-            data,
-            error
-        } = await query;
+            if (role === "user") {
 
-        if (error) {
+                query = query.eq(
+                    "user_id",
+                    user_id
+                );
+            }
+
+            // admin & petugas
+            // lihat semua
+
+            const {
+                data,
+                error
+            } = await query;
+
+            if (error) {
+
+                return NextResponse.json(
+                    {
+                        error:
+                            error.message,
+                    },
+                    {
+                        status: 400,
+                    }
+                );
+            }
+
+            
+
+            return NextResponse.json({
+                data,
+            });
+
+            
+
+        } catch (error) {
 
             return NextResponse.json(
                 {
@@ -56,29 +77,8 @@ export async function POST(req) {
                         error.message,
                 },
                 {
-                    status: 400,
+                    status: 500,
                 }
             );
         }
-
-        
-
-        return NextResponse.json({
-            data,
-        });
-
-        
-
-    } catch (error) {
-
-        return NextResponse.json(
-            {
-                error:
-                    error.message,
-            },
-            {
-                status: 500,
-            }
-        );
     }
-}

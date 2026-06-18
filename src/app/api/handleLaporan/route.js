@@ -1,20 +1,11 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "../../lib/supabase/supabaseAdmin";
 
-
-// =====================================
-// CREATE LAPORAN
-// =====================================
 export async function POST(req) {
 
     try {
 
-        const formData =
-            await req.formData();
-
-        // =====================================
-        // AMBIL DATA FORM
-        // =====================================
+        const formData = await req.formData();
 
         const nama_pelapor =
             formData.get("nama_pelapor");
@@ -31,12 +22,43 @@ export async function POST(req) {
         const foto =
             formData.get("foto");
 
+        const foto_kk =
+            formData.get("foto_kk");
+
+        const rt =
+            formData.get("rt");
+
+        const rw =
+            formData.get("rw");
+
         const user_id =
             formData.get("user_id");
 
-        // =====================================
+        // ==========================
         // VALIDASI
-        // =====================================
+        // ==========================
+
+        if (
+            !nama_pelapor ||
+            !kecamatan_id ||
+            !kategori ||
+            !description ||
+            !foto ||
+            !foto_kk ||
+            !rt ||
+            !rw
+        ) {
+
+            return NextResponse.json(
+                {
+                    error:
+                        "Laporan belum lengkap",
+                },
+                {
+                    status: 400,
+                }
+            );
+        }
 
         if (!user_id) {
 
@@ -51,12 +73,41 @@ export async function POST(req) {
             );
         }
 
-        if (!kecamatan_id) {
+        // ==========================
+        // UPLOAD FOTO LAPORAN
+        // ==========================
+
+        let fotoUrl = null;
+
+        const fotoBytes =
+            await foto.arrayBuffer();
+
+        const fotoBuffer =
+            Buffer.from(fotoBytes);
+
+        const fotoName =
+            `laporan-${Date.now()}-${foto.name}`;
+
+        const {
+            error: fotoError
+        } = await supabaseAdmin
+            .storage
+            .from("laporan_image_drinase")
+            .upload(
+                fotoName,
+                fotoBuffer,
+                {
+                    contentType:
+                        foto.type,
+                }
+            );
+
+        if (fotoError) {
 
             return NextResponse.json(
                 {
                     error:
-                        "Wilayah wajib diisi",
+                        fotoError.message,
                 },
                 {
                     status: 400,
@@ -64,68 +115,75 @@ export async function POST(req) {
             );
         }
 
-       
+        const {
+            data: fotoPublic
+        } = supabaseAdmin
+            .storage
+            .from("laporan_image_drinase")
+            .getPublicUrl(
+                fotoName
+            );
 
-        // =====================================
-        // UPLOAD FOTO
-        // =====================================
+        fotoUrl =
+            fotoPublic.publicUrl;
 
-        let fotoUrl = null;
+        // ==========================
+        // UPLOAD FOTO KK
+        // ==========================
 
-        if (foto && foto.size > 0) {
+        let kkUrl = null;
 
-            const bytes =
-                await foto.arrayBuffer();
+        const kkBytes =
+            await foto_kk.arrayBuffer();
 
-            const buffer =
-                Buffer.from(bytes);
+        const kkBuffer =
+            Buffer.from(kkBytes);
 
-            const fileName =
-                `${Date.now()}-${foto.name}`;
+        const kkName =
+            `kk-${Date.now()}-${foto_kk.name}`;
 
-            const {
-                error: uploadError
-            } = await supabaseAdmin
-                .storage
-                    .from("laporan_image_drinase")
-                .upload(
-                    fileName,
-                    buffer,
-                    {
-                        contentType:
-                            foto.type,
-                    }
-                );
+        const {
+            error: kkError
+        } = await supabaseAdmin
+            .storage
+            .from("laporan_image_drinase")
+            .upload(
+                kkName,
+                kkBuffer,
+                {
+                    contentType:
+                        foto_kk.type,
+                }
+            );
 
-            if (uploadError) {
+        if (kkError) {
 
-                return NextResponse.json(
-                    {
-                        error:
-                            uploadError.message,
-                    },
-                    {
-                        status: 400,
-                    }
-                );
-            }
-
-            const {
-                data: publicData
-            } = supabaseAdmin
-                .storage
-                    .from("laporan_image_drinase")
-                .getPublicUrl(
-                    fileName
-                );
-
-            fotoUrl =
-                publicData.publicUrl;
+            return NextResponse.json(
+                {
+                    error:
+                        kkError.message,
+                },
+                {
+                    status: 400,
+                }
+            );
         }
 
-        // =====================================
-        // INSERT LAPORAN
-        // =====================================
+        const {
+            data: kkPublic
+        } = supabaseAdmin
+            .storage
+            .from("laporan_image_drinase")
+            .getPublicUrl(
+                kkName
+            );
+
+        kkUrl =
+            kkPublic.publicUrl;
+
+        // ==========================
+        // VALIDASI KECAMATAN
+        // ==========================
 
         const {
             data: kecamatanExist
@@ -150,7 +208,11 @@ export async function POST(req) {
                 }
             );
         }
-        
+
+        // ==========================
+        // INSERT LAPORAN
+        // ==========================
+
         const {
             error: laporanError
         } = await supabaseAdmin
@@ -158,19 +220,16 @@ export async function POST(req) {
             .insert([
                 {
                     user_id,
-
-                    kecamatan_id:
-                        kecamatan_id,
-
+                    kecamatan_id,
                     nama_pelapor,
-
                     kategori,
-
                     description,
-
                     image_laporan:
                         fotoUrl,
-
+                    image_kk:
+                        kkUrl,
+                    rt,
+                    rw,
                     status:
                         "pending",
                 },
